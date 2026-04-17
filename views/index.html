@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="Home">
+          <svg
+            class="logo"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+          >
+            <circle cx="50" cy="50" r="45" fill="#0F62FE" />
+          </svg>
+        </a>
+        <h1
+          style="
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+          "
+        >
+          Todo List
+        </h1>
+      </div>
+    </header>
+
+    <main>
+      <section id="todo-app" class="container todo-app">
+        <h2>Your Todo List</h2>
+        <div class="todo-panel">
+          <form id="todoForm" class="todo-form">
+            <input
+              id="todoInput"
+              placeholder="Add a new task (e.g. Prepare slides)"
+              aria-label="New todo"
+            />
+            <button class="btn primary" type="submit">Add</button>
+          </form>
+
+          <ul id="todoList" class="events"></ul>
+        </div>
+      </section>
+    </main>
+
+    <!-- footer removed: content focused solely on todo app -->
+
+    <script src="index.js"></script>
+  </body>
+</html>

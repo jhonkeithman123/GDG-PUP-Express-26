@@ -1,6 +1,6 @@
 // Imports
 import express from "express";
-import render from "./render.js"; // For rendering the file
+import route from "./routes/route.js";
 
 // Declaration && Initialization
 const app = express();
@@ -9,9 +9,7 @@ const PORT = 3000;
 // Middlewares
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.sendFile(render("index/index.html"));
-});
+app.use("/", route);
 
 // listen to the port
 app.listen(PORT, () => {
