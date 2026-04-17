@@ -1,0 +1,23 @@
+{
+  "name": "studyjam5-expressjs",
+  "version": "1.0.0",
+  "description": "Express Js StudyJam",
+  "homepage": "https://github.com/jhonkeithman123/GDG-PUP-Express-26#readme",
+  "bugs": {
+    "url": "https://github.com/jhonkeithman123/GDG-PUP-Express-26/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhonkeithman123/GDG-PUP-Express-26.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
