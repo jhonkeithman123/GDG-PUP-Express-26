@@ -14,13 +14,18 @@ const todoFile = path.join(__dirname, "../", "todo.json");
 // Helper: read todos from file
 function readTodo() {
   if (!fs.existsSync(todoFile)) return [];
-  const data = fs.readFileSync(todoFile, "utf-8");
-  return JSON.parse(data || "[]");
+  const data = fs.readFileSync(todoFile, "utf-8").trim();
+  if (!data) return [];
+  try {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 // Helper: write todos to file
 function writeTodo(todos) {
-  if (!fs.existsSync(todoFile)) return [];
   fs.writeFileSync(todoFile, JSON.stringify(todos, null, 2));
 }
 
@@ -34,10 +39,13 @@ router.get("/todos", (req, res) => {
 });
 
 router.post("/todos", (req, res) => {
+  const task = typeof req.body.task === "string" ? req.body.task.trim() : "";
+  if (!task) return res.status(400).json({ error: "Task is required" });
+
   const todos = readTodo();
   const newTodo = {
     id: todos.length ? todos[todos.length - 1].id + 1 : 1,
-    task: req.body.task,
+    task,
     done: false,
   };
   todos.push(newTodo);

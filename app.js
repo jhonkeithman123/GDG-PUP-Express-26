@@ -8,6 +8,8 @@ const PORT = 3000;
 
 // Middlewares
 app.use(express.json());
+// serve static assets (css/js) from the views folder
+app.use(express.static("views"));
 
 app.use("/", route);
 
