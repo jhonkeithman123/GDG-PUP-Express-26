@@ -4,8 +4,11 @@ const state = { todos: [], filter: "all" };
 const api = {
   // Will only be done here
   list: () =>
-    fetch("/todos").then((r) => {
-      if (r.status !== 200) throw new Error("Failed to load");
+    fetch("/todos").then(async (r) => {
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        throw new Error(body?.error || body?.message || "Failed to load");
+      }
       return r.json();
     }),
   create: (task) =>
@@ -13,8 +16,11 @@ const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task }),
-    }).then((r) => {
-      if (r.status !== 200) throw new Error("Create failed");
+    }).then(async (r) => {
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        throw new Error(body?.error || body?.message || "Create failed");
+      }
       return r.json();
     }),
   update: (id, body) =>
@@ -22,13 +28,19 @@ const api = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-    }).then((r) => {
-      if (r.status !== 200) throw new Error("Update failed");
+    }).then(async (r) => {
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        throw new Error(body?.error || body?.message || "Update failed");
+      }
       return r.json();
     }),
   remove: (id) =>
-    fetch(`/todos/${id}`, { method: "DELETE" }).then((r) => {
-      if (r.status !== 200) throw new Error("Delete failed");
+    fetch(`/todos/${id}`, { method: "DELETE" }).then(async (r) => {
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        throw new Error(body?.error || body?.message || "Delete failed");
+      }
       return r.json();
     }),
 };
@@ -202,7 +214,6 @@ async function onCreate(e) {
   const input = qs("#todoInput");
   if (!input) return;
   const task = input.value.trim();
-  if (!task) return;
   clearError();
   try {
     const created = await api.create(task);
