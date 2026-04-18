@@ -13,7 +13,7 @@ const todoFile = path.join(__dirname, "../", "todo.json");
 
 // Helper: read todos from file
 function readTodo() {
-  if (!fs.existsSync(todoFile)) return [];
+  if (!fs.existsSync(todoFile)) return "Database Not found";
   const data = fs.readFileSync(todoFile, "utf-8").trim();
   if (!data) return [];
   try {
@@ -30,12 +30,20 @@ function writeTodo(todos) {
 }
 
 // ROUTES
+
+// Index Route
+
 router.get("/", (req, res) => {
   res.sendFile(render("index.html"));
 });
 
+// Crud Operations (Static Routes)
+
 router.get("/todos", (req, res) => {
-  res.json(readTodo());
+  const todos = readTodo();
+  if (todos === "Database Not found")
+    res.status(500).json("Failed to fetch to database");
+  res.status(200).json(todos);
 });
 
 router.post("/todos", (req, res) => {
@@ -43,6 +51,9 @@ router.post("/todos", (req, res) => {
   if (!task) return res.status(400).json({ error: "Task is required" });
 
   const todos = readTodo();
+  if (todos === "Database Not found")
+    res.status(500).json("Failed to fetch to database");
+
   const newTodo = {
     id: todos.length ? todos[todos.length - 1].id + 1 : 1,
     task,
@@ -50,18 +61,16 @@ router.post("/todos", (req, res) => {
   };
   todos.push(newTodo);
   writeTodo(todos);
-  res.json(newTodo);
+  res.status(200).json(newTodo);
 });
 
-router.get("/todos/:id", (req, res) => {
-  const todos = readTodo();
-  const todo = todos.find((t) => t.id === parseInt(req.params.id));
-  if (!todo) return res.status(404).send("Todo not found");
-  res.json(todo);
-});
+// Dynamic Routes
 
 router.patch("/todos/:id", (req, res) => {
   const todos = readTodo();
+  if (todos === "Database Not found")
+    res.status(500).json("Failed to fetch to database");
+
   const todo = todos.find((t) => t.id === parseInt(req.params.id));
   if (!todo) return res.status(404).send("Todo not found");
 
@@ -69,17 +78,20 @@ router.patch("/todos/:id", (req, res) => {
   todo.done = req.body.done ?? todo.done;
 
   writeTodo(todos);
-  res.json(todo);
+  res.status(200).json(todo);
 });
 
 router.delete("/todos/:id", (req, res) => {
   let todos = readTodo();
+  if (todos === "Database Not found")
+    res.status(500).json("Failed to fetch to database");
+
   const index = todos.findIndex((t) => t.id === parseInt(req.params.id));
   if (index === -1) return res.status(404).send("Todo not found");
 
   const deleted = todos.splice(index, 1);
   writeTodo(todos);
-  res.json(deleted[0]);
+  res.status(200).json(deleted[0]);
 });
 
 export default router;

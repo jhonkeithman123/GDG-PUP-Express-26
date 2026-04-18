@@ -2,9 +2,10 @@
 const state = { todos: [], filter: "all" };
 
 const api = {
+  // Will only be done here
   list: () =>
     fetch("/todos").then((r) => {
-      if (!r.ok) throw new Error("Failed to load");
+      if (r.status !== 200) throw new Error("Failed to load");
       return r.json();
     }),
   create: (task) =>
@@ -13,7 +14,7 @@ const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task }),
     }).then((r) => {
-      if (!r.ok) throw new Error("Create failed");
+      if (r.status !== 200) throw new Error("Create failed");
       return r.json();
     }),
   update: (id, body) =>
@@ -22,12 +23,12 @@ const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     }).then((r) => {
-      if (!r.ok) throw new Error("Update failed");
+      if (r.status !== 200) throw new Error("Update failed");
       return r.json();
     }),
   remove: (id) =>
     fetch(`/todos/${id}`, { method: "DELETE" }).then((r) => {
-      if (!r.ok) throw new Error("Delete failed");
+      if (r.status !== 200) throw new Error("Delete failed");
       return r.json();
     }),
 };
@@ -104,7 +105,8 @@ function makeItem(todo) {
     updateSummary();
     clearError();
     try {
-      await api.update(todo.id, { done: chk.checked });
+      const updated = await api.update(todo.id, { done: chk.checked });
+      if (updated && typeof updated === "object") Object.assign(todo, updated);
     } catch (e) {
       todo.done = prev;
       chk.checked = prev;
@@ -133,7 +135,9 @@ function makeItem(todo) {
       left.replaceChild(text, input);
       clearError();
       try {
-        await api.update(todo.id, { task: val });
+        const updated = await api.update(todo.id, { task: val });
+        if (updated && typeof updated === "object")
+          Object.assign(todo, updated);
       } catch (e) {
         todo.task = old;
         text.textContent = old;
