@@ -2,6 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import render from "../render.js";
 import path from "path";
+import { validateCreate, validateUpdate } from "../middlewares/validateTask.js";
 
 const router = Router();
 
@@ -46,13 +47,12 @@ router.get("/todos", (req, res) => {
   res.status(200).json(todos);
 });
 
-router.post("/todos", (req, res) => {
-  const task = typeof req.body.task === "string" ? req.body.task.trim() : "";
-  if (!task) return res.status(400).json({ error: "Task is required" });
+router.post("/todos", validateCreate, (req, res) => {
+  const task = req.body.task;
 
   const todos = readTodo();
   if (todos === "Database Not found")
-    res.status(500).json("Failed to fetch to database");
+    return res.status(500).json("Failed to fetch to database");
 
   const newTodo = {
     id: todos.length ? todos[todos.length - 1].id + 1 : 1,
@@ -66,10 +66,10 @@ router.post("/todos", (req, res) => {
 
 // Dynamic Routes
 
-router.patch("/todos/:id", (req, res) => {
+router.patch("/todos/:id", validateUpdate, (req, res) => {
   const todos = readTodo();
   if (todos === "Database Not found")
-    res.status(500).json("Failed to fetch to database");
+    return res.status(500).json("Failed to fetch to database");
 
   const todo = todos.find((t) => t.id === parseInt(req.params.id));
   if (!todo) return res.status(404).send("Todo not found");
