@@ -2,7 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import render from "../render.js";
 import path from "path";
-import { validateCreate, validateUpdate } from "../middlewares/validateTask.js";
+import validateTask from "../middlewares/validateTask.js";
 
 const router = Router();
 
@@ -47,7 +47,7 @@ router.get("/todos", (req, res) => {
   res.status(200).json(todos);
 });
 
-router.post("/todos", validateCreate, (req, res) => {
+router.post("/todos", validateTask, (req, res) => {
   const task = req.body.task;
 
   const todos = readTodo();
@@ -66,7 +66,7 @@ router.post("/todos", validateCreate, (req, res) => {
 
 // Dynamic Routes
 
-router.patch("/todos/:id", validateUpdate, (req, res) => {
+router.patch("/todos/:id", validateTask, (req, res) => {
   const todos = readTodo();
   if (todos === "Database Not found")
     return res.status(500).json("Failed to fetch to database");

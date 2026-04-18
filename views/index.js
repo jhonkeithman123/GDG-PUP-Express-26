@@ -2,7 +2,6 @@
 const state = { todos: [], filter: "all" };
 
 const api = {
-  // Will only be done here
   list: () =>
     fetch("/todos").then(async (r) => {
       if (!r.ok) {
@@ -136,12 +135,13 @@ function makeItem(todo) {
     input.focus();
     input.select();
     const save = async () => {
-      const val = input.value.trim();
-      if (!val || val === todo.task) {
+      const val = input.value; // send raw value so backend validation can run
+      if (val === todo.task) {
         left.replaceChild(text, input);
         return;
       }
       const old = todo.task;
+      // optimistic update (will be corrected if server returns different value)
       todo.task = val;
       text.textContent = val;
       left.replaceChild(text, input);

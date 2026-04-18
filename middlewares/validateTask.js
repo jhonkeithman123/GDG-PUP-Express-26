@@ -1,23 +1,22 @@
-// Validation middleware for todo routes
-export function validateCreate(req, res, next) {
-  const task = typeof req.body.task === "string" ? req.body.task.trim() : "";
-  if (!task) return res.status(400).json({ error: "Task is required" });
-  // normalize
-  req.body.task = task;
-  next();
-}
-
-export function validateUpdate(req, res, next) {
-  if (req.body.task !== undefined) {
-    if (typeof req.body.task !== "string")
-      return res.status(400).json({ error: "Task must be a string" });
-    const t = req.body.task.trim();
-    if (!t) return res.status(400).json({ error: "Task cannot be empty" });
-    req.body.task = t;
+// Single validation middleware for create (POST) and update (PATCH)
+// - POST: requires `task` present and non-empty
+// - PATCH: if `task` is present, it must be non-empty
+export default function validateTask(req, res, next) {
+  if (req.method === "POST") {
+    const task = (req.body.task ?? "").toString().trim();
+    if (!task) return res.status(400).json({ error: "Task is required" });
+    req.body.task = task;
+    return next();
   }
-  // validate id param
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id) || id <= 0)
-    return res.status(400).json({ error: "Invalid id" });
-  next();
+
+  if (req.method === "PATCH") {
+    if (req.body.task !== undefined) {
+      const t = req.body.task.toString().trim();
+      if (!t) return res.status(400).json({ error: "Task cannot be empty" });
+      req.body.task = t;
+    }
+    return next();
+  }
+
+  return next();
 }
